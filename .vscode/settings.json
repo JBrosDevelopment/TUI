@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "*.json": "json",
+        "vector": "cpp",
+        "xhash": "cpp",
+        "unordered_map": "cpp"
+    }
+}
