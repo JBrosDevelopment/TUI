@@ -1,4 +1,3 @@
-// src/lib.h
 #ifndef LIB_H
 #define LIB_H
 
@@ -6,7 +5,9 @@
 extern "C" {
 #endif
 
-void hello_from_lib();
+
+
+
 
 #ifdef __cplusplus
 }

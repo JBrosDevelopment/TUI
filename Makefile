@@ -1,8 +1,7 @@
 # Compiler settings
-CC = gcc
-CXX = g++
-CFLAGS = -Wall -Wextra
-CXXFLAGS = -Wall -Wextra -std=c++17
+GCC = gcc
+OPTIONS = -Wall -Wextra
+COMPILER = $(GCC) $(OPTIONS)
 
 # Project structure
 BIN = bin/
@@ -33,14 +32,14 @@ $(LIB_OUT): $(LIB_OBJ)
 	rm -f $(LIB_OBJ)
 
 $(LIB_OBJ): $(TARGET_LIB)
-	$(CXX) $(CXXFLAGS) -c $(TARGET_LIB) -o $(LIB_OBJ)
+	$(COMPILER) -c $(TARGET_LIB) -o $(LIB_OBJ)
 
 # Build example
 example: $(EXAMPLE_OUT)
 	@echo Built $(NAME) example
 
 $(EXAMPLE_OUT): $(TARGET_EXAMPLE) $(LIB_OUT)
-	$(CXX) $(CFLAGS) $(TARGET_EXAMPLE) $(LIB_OUT) -o $(EXAMPLE_OUT)
+	$(COMPILER) $(TARGET_EXAMPLE) -Lbin -ltui -o $(EXAMPLE_OUT)
 
 run: all
 	@echo Running $(EXAMPLE_OUT)
