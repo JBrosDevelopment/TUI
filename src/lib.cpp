@@ -4,7 +4,7 @@
 
 void TUI::init() {
     key_events.reserve(1);
-    set_event_key(EXIT_KEY_EVENT, VK_ESCAPE, KeyModifiers::KeyModifierShift);
+    SetConsoleOutputCP(CP_UTF8);
     running = true;
 }
 void TUI::clear_screen() {
@@ -17,25 +17,37 @@ bool TUI::is_running() {
 
 void TUI::exit() {
     running = false;
+    printf("\033[39m\033[49m\n");
+    
 }
 
-void TUI::set_event_key(int event_id, int virtual_key, int modifier) {
-    key_events.push_back(KeyEvent{event_id, virtual_key, modifier});
+void TUI::set_event_key(std::string name, int key, int modifier) {
+    key_events.push_back(KeyEvent{name, key, modifier});
 }
 
 void TUI::actions() {
-    check_exit();
+    check_events();
+    renderer.draw_boxes();
 }
 
-void TUI::check_exit() {
-    const KeyEvent& exit_event = key_events[EXIT_KEY_EVENT];
-
-    if (!(GetKeyState(exit_event.key) & 0x8000)) {
-        return;
+bool TUI::is_event_hit(std::string name) {
+    for (int i = 0; i < (int)hit_events.size(); i++) {
+        if (hit_events[i] == name) return true;
     }
+    return false;
+}
 
-    if (exit_event.modifier == KeyModifierNone || is_modifier_pressed(exit_event.modifier)) {
-        exit();
+void TUI::check_events() {
+    hit_events.clear();
+    for (int i = 0; i < (int)key_events.size(); i++) {
+        const KeyEvent& event = key_events[i];
+        if (!(GetKeyState(event.key) & 0x8000)) {
+            return;
+        }
+    
+        if (event.modifier == KeyModifierNone || is_modifier_pressed(event.modifier)) {
+            hit_events.push_back(event.id);
+        }
     }
 }
 

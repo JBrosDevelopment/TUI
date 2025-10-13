@@ -5,43 +5,47 @@ CFLAGS = -Wall -Wextra
 CXXFLAGS = -Wall -Wextra -std=c++17
 
 # Project structure
-BIN = bin/
-TARGET_LIB = src/lib.cpp
-TARGET_EXAMPLE = example/main.cpp
-HEADER = src/lib.h
+SRC_DIR = src
+BIN_DIR = bin
+EXAMPLE_SRC = example/main.cpp
 
 # Output names
 NAME = tui
 VERSION = 0.0.1
-LIB_OBJ = $(BIN)lib.o
-LIB_OUT = $(BIN)lib$(NAME).a
-EXAMPLE_OUT = $(BIN)example
+LIB_OUT = $(BIN_DIR)/lib$(NAME).a
+EXAMPLE_OUT = $(BIN_DIR)/example
+
+# Find all .cpp files in src/ and convert to .o in bin/
+SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES = $(patsubst $(SRC_DIR)/%.cpp,$(BIN_DIR)/%.o,$(SRC_FILES))
 
 # Build everything
-all: | $(BIN) lib example
+all: | $(BIN_DIR) lib example
 
 # Create bin directory
-$(BIN):
-	mkdir -p $(BIN)
+$(BIN_DIR):
+	mkdir -p $(BIN_DIR)
 
 # Build static library
 lib: $(LIB_OUT)
 	@echo Built $(NAME) library v$(VERSION)
 
-$(LIB_OUT): $(LIB_OBJ)
-	ar rcs $(LIB_OUT) $(LIB_OBJ)
-	rm -f $(LIB_OBJ)
+$(LIB_OUT): $(OBJ_FILES)
+	ar rcs $@ $^
+	rm -f $(OBJ_FILES)
 
-$(LIB_OBJ): $(TARGET_LIB)
-	$(CXX) $(CXXFLAGS) -c $(TARGET_LIB) -o $(LIB_OBJ)
+# Compile each .cpp to .o
+$(BIN_DIR)/%.o: $(SRC_DIR)/%.cpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 # Build example
 example: $(EXAMPLE_OUT)
 	@echo Built $(NAME) example
 
-$(EXAMPLE_OUT): $(TARGET_EXAMPLE) $(LIB_OUT)
-	$(CXX) $(CFLAGS) $(TARGET_EXAMPLE) $(LIB_OUT) -o $(EXAMPLE_OUT)
+$(EXAMPLE_OUT): $(EXAMPLE_SRC) $(LIB_OUT)
+	$(CXX) $(CXXFLAGS) $^ -o $@
 
+# Run targets
 run: all
 	@echo Running $(EXAMPLE_OUT)
 	./$(EXAMPLE_OUT)
@@ -50,7 +54,8 @@ run_only:
 	@echo Running $(EXAMPLE_OUT)
 	./$(EXAMPLE_OUT)
 
+# Clean
 clean:
-	rm -rf $(BIN)
+	rm -rf $(BIN_DIR)
 
-.PHONY: all lib example clean run
+.PHONY: all lib example clean run run_only
