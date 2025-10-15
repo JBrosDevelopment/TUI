@@ -1,6 +1,5 @@
 #include "lib.hpp"
 #include <stdio.h>
-#include <windows.h>
 
 void TUI::init() {
     key_events.reserve(1);
@@ -41,7 +40,7 @@ void TUI::check_events() {
     hit_events.clear();
     for (int i = 0; i < (int)key_events.size(); i++) {
         const KeyEvent& event = key_events[i];
-        if (!(GetKeyState(event.key) & 0x8000)) {
+        if (!(GetKeyState(event.key))) {
             return;
         }
     

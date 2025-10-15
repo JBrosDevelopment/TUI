@@ -24,23 +24,28 @@ void GraphicsBox::move(Renderer* renderer, int x, int y) {
     renderer->adjusted_box(this);
 }
 void GraphicsBox::resize(Renderer* renderer, int w, int h) {
+    if (w == this->w && h == this->h) return;
     this->w = w;
     this->h = h;
     renderer->adjusted_box(this);
 }
 void GraphicsBox::set_border_type(Renderer* renderer, BorderType border_type) {
+    if (border_type == this->border_type) return;
     this->border_type = border_type;
     renderer->adjusted_box(this);
 }
 void GraphicsBox::set_border_color(Renderer* renderer, Color border_color) {
+    if (border_color.b == this->border_color.b && border_color.g == this->border_color.g && border_color.r == this->border_color.r) return;
     this->border_color = border_color;
     renderer->adjusted_box(this);
 }
 void GraphicsBox::set_window_color(Renderer* renderer, Color window_color) {
+    if (border_color.b == this->border_color.b && border_color.g == this->border_color.g && border_color.r == this->border_color.r) return;
     this->window_color = window_color;
     renderer->adjusted_box(this);
 }
 void GraphicsBox::set_title(Renderer* renderer, std::string title) {
+    if (title == this->title) return;
     this->title = title;
     renderer->adjusted_box(this);
 }
@@ -62,7 +67,7 @@ Color GraphicsBox::get_window_color() {
 std::string GraphicsBox::get_title() {
     return this->title;
 }
-void GraphicsBox::add_line(Renderer* renderer, int x1, int y1, int x2, int y2, int width, Color color) {
+GraphicsObjectLine* GraphicsBox::add_line(Renderer* renderer, int x1, int y1, int x2, int y2, int width, Color color) {
     GraphicsObjectLine line;
     line.x1 = x1;
     line.y1 = y1;
@@ -72,16 +77,18 @@ void GraphicsBox::add_line(Renderer* renderer, int x1, int y1, int x2, int y2, i
     line.color = color;
     graphics_lines.push_back(line);
     renderer->graphics_updated_box(this);
+    return &graphics_lines[graphics_lines.size() - 1];
 }
-void GraphicsBox::add_curve(Renderer* renderer, std::vector<std::pair<int, int>> points, int width, Color color) {
+GraphicsObjectCurve* GraphicsBox::add_curve(Renderer* renderer, std::vector<std::pair<int, int>> points, int width, Color color) {
     GraphicsObjectCurve curve;
     curve.points = points;
     curve.width = width;
     curve.color = color;
     graphics_curves.push_back(curve);
     renderer->graphics_updated_box(this);
+    return &graphics_curves[graphics_curves.size() - 1];
 }
-void GraphicsBox::add_polygon(Renderer* renderer, int x, int y, int w, int h, int sides, Color color) {
+GraphicsObjectPolygon* GraphicsBox::add_polygon(Renderer* renderer, int x, int y, int w, int h, int sides, Color color) {
     GraphicsObjectPolygon polygon;
     polygon.x = x;
     polygon.y = y;
@@ -91,8 +98,9 @@ void GraphicsBox::add_polygon(Renderer* renderer, int x, int y, int w, int h, in
     polygon.color = color;
     graphics_polygons.push_back(polygon);
     renderer->graphics_updated_box(this);
+    return &graphics_polygons[graphics_polygons.size() - 1];
 }
-void GraphicsBox::add_text(Renderer* renderer, int x, int y, std::string text, Color color) {
+GraphicsObjectText* GraphicsBox::add_text(Renderer* renderer, int x, int y, std::string text, Color color) {
     GraphicsObjectText text_object;
     text_object.x = x;
     text_object.y = y;
@@ -100,8 +108,9 @@ void GraphicsBox::add_text(Renderer* renderer, int x, int y, std::string text, C
     text_object.color = color;
     graphics_texts.push_back(text_object);
     renderer->graphics_updated_box(this);
+    return &graphics_texts[graphics_texts.size() - 1];
 }
-void GraphicsBox::add_map(Renderer* renderer, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map) {
+GraphicsObjectMap* GraphicsBox::add_map(Renderer* renderer, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map) {
     GraphicsObjectMap map_object;
     map_object.x = x;
     map_object.y = y;
@@ -111,6 +120,7 @@ void GraphicsBox::add_map(Renderer* renderer, int x, int y, int w, int h, Color 
     map_object.map = map;
     graphics_maps.push_back(map_object);
     renderer->graphics_updated_box(this);
+    return &graphics_maps[graphics_maps.size() - 1];
 }
 
 void Renderer::adjusted_box(GraphicsBox* box) {
@@ -218,34 +228,34 @@ void Renderer::draw_window(GraphicsBox* box) {
     }
 
     for (auto line : box->graphics_lines) {
-        draw_line(x, y, line.x1, line.y1, line.x2, line.y2, line.width, line.color);
+        draw_line(box, line.x1, line.y1, line.x2, line.y2, line.width, line.color);
     }
     for (auto curve : box->graphics_curves) {
-        draw_curve(x, y, curve.points, curve.width, curve.color);
+        draw_curve(box, curve.points, curve.width, curve.color);
     }
     for (auto polygon : box->graphics_polygons) {
-        draw_polygon(x, y, polygon.x, polygon.y, polygon.w, polygon.h, polygon.sides, polygon.color);
+        draw_polygon(box, polygon.x, polygon.y, polygon.w, polygon.h, polygon.sides, polygon.color);
     }
     for (auto text : box->graphics_texts) {
-        draw_text(x, y, text.x, text.y, text.text, text.color);
+        draw_text(box, text.x, text.y, text.text, text.color);
     }
     for (auto map : box->graphics_maps) {
-        draw_map(x, y, map.x, map.y, map.w, map.h, map.color, map.map);
+        draw_map(box, map.x, map.y, map.w, map.h, map.color, map.map);
     }
 }
-void Renderer::draw_line(int offset_x, int offset_y, int x1, int y1, int x2, int y2, int width, Color color) {
+void Renderer::draw_line(GraphicsBox* box, int x1, int y1, int x2, int y2, int width, Color color) {
     
 }
-void Renderer::draw_curve(int offset_x, int offset_y, std::vector<std::pair<int, int>> points, int width, Color color) {
+void Renderer::draw_curve(GraphicsBox* box, std::vector<std::pair<int, int>> points, int width, Color color) {
     
 }
-void Renderer::draw_polygon(int offset_x, int offset_y, int x, int y, int w, int h, int sides, Color color) {
+void Renderer::draw_polygon(GraphicsBox* box, int x, int y, int w, int h, int sides, Color color) {
     
 }
-void Renderer::draw_text(int offset_x, int offset_y, int x, int y, std::string text, Color color) {
+void Renderer::draw_text(GraphicsBox* box, int x, int y, std::string text, Color color) {
     
 }
-void Renderer::draw_map(int offset_x, int offset_y, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map) {
+void Renderer::draw_map(GraphicsBox* box, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map) {
     
 }
 void Renderer::draw_pixel(char character, int x, int y, Color color) {

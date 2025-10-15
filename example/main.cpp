@@ -8,24 +8,26 @@ int main() {
     GraphicsBox box("Test", 8, 5, 22, 8, BorderType::BorderTypeSingle, C_RGB(100, 200, 255), C_RGB(255, 200, 100));
     tui.renderer.add_box(box);
 
+    GraphicsObjectLine* line = box.add_line(&tui.renderer, 1, 1, 5, 5, 1, C_RGB(255, 0, 0));
+
     int x, y, w, h;
     box.get_position_size(&x, &y, &w, &h);
 
-    tui.set_event_key("exit", K_ESCAPE, KeyModifierNone);
-    tui.set_event_key("move-left", K_LEFT, KeyModifierNone);
-    tui.set_event_key("move-right", K_RIGHT, KeyModifierNone);
-    tui.set_event_key("move-up", K_UP, KeyModifierNone);
-    tui.set_event_key("move-down", K_DOWN, KeyModifierNone);
-    tui.set_event_key("size-left", K_LEFT, KeyModifierControl);
-    tui.set_event_key("size-right", K_RIGHT, KeyModifierControl);
-    tui.set_event_key("size-up", K_UP, KeyModifierControl);
-    tui.set_event_key("size-down", K_DOWN, KeyModifierControl);
+    tui.set_event_key("exit", KEY_ESC, KeyModifierNone);
+    tui.set_event_key("move-left", KEY_LEFT, KeyModifierNone);
+    tui.set_event_key("move-right", KEY_RIGHT, KeyModifierNone);
+    tui.set_event_key("move-up", KEY_UP, KeyModifierNone);
+    tui.set_event_key("move-down", KEY_DOWN, KeyModifierNone);
+    tui.set_event_key("size-left", KEY_LEFT, KeyModifierControl);
+    tui.set_event_key("size-right", KEY_RIGHT, KeyModifierControl);
+    tui.set_event_key("size-up", KEY_UP, KeyModifierControl);
+    tui.set_event_key("size-down", KEY_DOWN, KeyModifierControl);
     
     int position_x, position_y;
-    tui.set_event_key("position-left", K_LEFT, KeyModifierShift);
-    tui.set_event_key("position-right", K_RIGHT, KeyModifierShift);
-    tui.set_event_key("position-up", K_UP, KeyModifierShift);
-    tui.set_event_key("position-down", K_DOWN, KeyModifierShift);
+    tui.set_event_key("position-left", KEY_LEFT, KeyModifierShift);
+    tui.set_event_key("position-right", KEY_RIGHT, KeyModifierShift);
+    tui.set_event_key("position-up", KEY_UP, KeyModifierShift);
+    tui.set_event_key("position-down", KEY_DOWN, KeyModifierShift);
 
     while (tui.is_running()) {
         tui.actions();

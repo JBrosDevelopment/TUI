@@ -3,20 +3,7 @@
 
 #include <vector>
 #include "renderer.hpp"
-
-#define K_ESCAPE 0x1B
-#define K_ENTER 0x0D
-#define K_SHIFT 0x10
-#define K_CONTROL 0x11
-#define K_SPACE 0x20
-#define K_END 0x23
-#define K_HOME 0x24
-#define K_LEFT 0x25
-#define K_UP 0x26
-#define K_RIGHT 0x27
-#define K_DOWN 0x28
-#define K_INSERT 0x2D
-#define K_DELETE 0x2E
+#include "KeyState.h"
 
 enum KeyModifiers {
     KeyModifierNone = 0,

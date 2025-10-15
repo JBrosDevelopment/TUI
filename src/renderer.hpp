@@ -111,11 +111,11 @@ public:
     Color get_border_color();
     Color get_window_color();
     std::string get_title();
-    void add_line(Renderer* renderer, int x1, int y1, int x2, int y2, int width, Color color);
-    void add_curve(Renderer* renderer, std::vector<std::pair<int, int>> points, int width, Color color);
-    void add_polygon(Renderer* renderer, int x, int y, int w, int h, int sides, Color color);
-    void add_text(Renderer* renderer, int x, int y, std::string text, Color color);
-    void add_map(Renderer* renderer, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map);
+    GraphicsObjectLine* add_line(Renderer* renderer, int x1, int y1, int x2, int y2, int width, Color color);
+    GraphicsObjectCurve* add_curve(Renderer* renderer, std::vector<std::pair<int, int>> points, int width, Color color);
+    GraphicsObjectPolygon* add_polygon(Renderer* renderer, int x, int y, int w, int h, int sides, Color color);
+    GraphicsObjectText* add_text(Renderer* renderer, int x, int y, std::string text, Color color);
+    GraphicsObjectMap* add_map(Renderer* renderer, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map);
 private:
     int x, y, w, h;
     BorderType border_type;
@@ -138,11 +138,11 @@ public:
     void draw_box(GraphicsBox* box);
     void draw_boxes();
     void reset_graphics();
-    void draw_line(int offset_x, int offset_y, int x1, int y1, int x2, int y2, int width, Color color);
-    void draw_curve(int offset_x, int offset_y, std::vector<std::pair<int, int>> points, int width, Color color);
-    void draw_polygon(int offset_x, int offset_y, int x, int y, int w, int h, int sides, Color color);
-    void draw_text(int offset_x, int offset_y, int x, int y, std::string text, Color color);
-    void draw_map(int offset_x, int offset_y, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map);
+    void draw_line(GraphicsBox* box, int x1, int y1, int x2, int y2, int width, Color color);
+    void draw_curve(GraphicsBox* box, std::vector<std::pair<int, int>> points, int width, Color color);
+    void draw_polygon(GraphicsBox* box, int x, int y, int w, int h, int sides, Color color);
+    void draw_text(GraphicsBox* box, int x, int y, std::string text, Color color);
+    void draw_map(GraphicsBox* box, int x, int y, int w, int h, Color color, std::vector<std::vector<bool>> map);
 private:
     int x_cursor, y_cursor;
     Color fg_color, bg_color;
