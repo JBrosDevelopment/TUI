@@ -51,9 +51,9 @@ void TUI::check_events() {
 }
 
 bool TUI::is_modifier_pressed(int mod) {
-    bool shift_down = GetKeyState(VK_SHIFT) & 0x8000;
-    bool control_down = GetKeyState(VK_CONTROL) & 0x8000;
-    bool alt_down = GetKeyState(VK_MENU) & 0x8000;
+    bool shift_down = GetKeyState(KEY_SHIFT);
+    bool control_down = GetKeyState(KEY_CTRL);
+    bool alt_down = GetKeyState(KEY_ALT);
 
     if ((mod & KeyModifierShift) && !shift_down) return false;
     if ((mod & KeyModifierControl) && !control_down) return false;
