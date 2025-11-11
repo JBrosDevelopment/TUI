@@ -5,9 +5,9 @@
     #include <conio.h>
     #include <windows.h>
 #else
-    #include <X11/Xlib.h>
-    #include <X11/keysym.h>
+    #include <termios.h>
     #include <unistd.h>
+    #include <fcntl.h>
 #endif
 
 enum KeyCode {
@@ -51,6 +51,11 @@ inline bool GetKeyState(KeyCode key) {
         else if (c == ' ') keyStates[KEY_SPACE] = true;
     }
 
+    // Check modifier keys using GetAsyncKeyState
+    if (key == KEY_SHIFT) return (GetAsyncKeyState(VK_SHIFT) & 0x8000) != 0;
+    if (key == KEY_CTRL) return (GetAsyncKeyState(VK_CONTROL) & 0x8000) != 0;
+    if (key == KEY_ALT) return (GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
+
     // Return and reset the key state (so you only get it once per press)
     bool pressed = keyStates[key];
     keyStates[key] = false;
@@ -58,56 +63,41 @@ inline bool GetKeyState(KeyCode key) {
 }
 
 #else
-// Linux (X11) implementation
+
+// Simple implementation for non-Windows systems without external dependencies
 inline bool GetKeyState(KeyCode key) {
-    static Display* display = XOpenDisplay(nullptr);
-    if (!display) return false;
+    static struct termios oldt, newt;
+    static bool initialized = false;
 
-    char keys[32];
-    XQueryKeymap(display, keys);
-
-    KeySym ks = 0;
-    switch (key) {
-        case KEY_A: ks = XK_a; break;
-        case KEY_B: ks = XK_b; break;
-        case KEY_C: ks = XK_c; break;
-        case KEY_D: ks = XK_d; break;
-        case KEY_E: ks = XK_e; break;
-        case KEY_F: ks = XK_f; break;
-        case KEY_G: ks = XK_g; break;
-        case KEY_H: ks = XK_h; break;
-        case KEY_I: ks = XK_i; break;
-        case KEY_J: ks = XK_j; break;
-        case KEY_K: ks = XK_k; break;
-        case KEY_L: ks = XK_l; break;
-        case KEY_M: ks = XK_m; break;
-        case KEY_N: ks = XK_n; break;
-        case KEY_O: ks = XK_o; break;
-        case KEY_P: ks = XK_p; break;
-        case KEY_Q: ks = XK_q; break;
-        case KEY_R: ks = XK_r; break;
-        case KEY_S: ks = XK_s; break;
-        case KEY_T: ks = XK_t; break;
-        case KEY_U: ks = XK_u; break;
-        case KEY_V: ks = XK_v; break;
-        case KEY_W: ks = XK_w; break;
-        case KEY_X: ks = XK_x; break;
-        case KEY_Y: ks = XK_y; break;
-        case KEY_Z: ks = XK_z; break;
-        case KEY_LEFT:   ks = XK_Left; break;
-        case KEY_RIGHT:  ks = XK_Right; break;
-        case KEY_UP:     ks = XK_Up; break;
-        case KEY_DOWN:   ks = XK_Down; break;
-        case KEY_SHIFT:  ks = XK_Shift_L; break;
-        case KEY_CTRL:   ks = XK_Control_L; break;
-        case KEY_ALT:    ks = XK_Alt_L; break;
-        case KEY_SPACE:  ks = XK_space; break;
-        case KEY_ENTER:  ks = XK_Return; break;
-        case KEY_ESC:    ks = XK_Escape; break;
-        default: return false;
+    if (!initialized) {
+        // Save the terminal settings
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO); // Disable canonical mode and echo
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+        initialized = true;
     }
 
-    KeyCode kc = XKeysymToKeycode(display, ks);
-    return (keys[kc >> 3] & (1 << (kc & 7))) != 0;
+    // Set non-blocking mode
+    int oldf = fcntl(STDIN_FILENO, F_GETFL, 0);
+    fcntl(STDIN_FILENO, F_SETFL, oldf | O_NONBLOCK);
+
+    char c = 0;
+    if (read(STDIN_FILENO, &c, 1) > 0) {
+        // Restore blocking mode
+        fcntl(STDIN_FILENO, F_SETFL, oldf);
+
+        // Map basic keys
+        if (c >= 'A' && c <= 'Z') return key == (KeyCode)(KEY_A + (c - 'A'));
+        if (c >= 'a' && c <= 'z') return key == (KeyCode)(KEY_A + (c - 'a'));
+        if (c == 27) return key == KEY_ESC;
+        if (c == 13) return key == KEY_ENTER;
+        if (c == ' ') return key == KEY_SPACE;
+    }
+
+    // Restore blocking mode
+    fcntl(STDIN_FILENO, F_SETFL, oldf);
+    return false;
 }
+
 #endif

@@ -1,3 +1,54 @@
+//#include "../src/lib.hpp"
+
+// code to test KeyState.h
+
+#include "../src/KeyState.h"
+#include <iostream>
+
+int main() {
+    while (1)
+    {
+        if (GetKeyState(KEY_A)) {
+            std::cout << "Key A Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_B)) {
+            std::cout << "Key B Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_UP)) {
+            std::cout << "Key UP Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_DOWN)) {
+            std::cout << "Key DOWN Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_LEFT)) {
+            std::cout << "Key LEFT Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_RIGHT)) {
+            std::cout << "Key RIGHT Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_ESC)) {
+            std::cout << "Key ESC Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_ENTER)) {
+            std::cout << "Key ENTER Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_SPACE)) {
+            std::cout << "Key SPACE Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_SHIFT)) {
+            std::cout << "Key SHIFT Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_CTRL)) {
+            std::cout << "Key CTRL Pressed" << std::endl;
+        }
+        if (GetKeyState(KEY_ALT)) {
+            std::cout << "Key ALT Pressed" << std::endl;
+        }
+    }
+    
+}
+
+/*
 #include "../src/lib.hpp"
 
 int main() {
@@ -53,4 +104,4 @@ int main() {
     }
     
     return 0;
-}
+}*/
